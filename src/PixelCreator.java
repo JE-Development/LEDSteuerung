@@ -5,9 +5,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileWriter;
+import java.util.ArrayList;
 
-public class CoordsCreator {
+public class PixelCreator {
 
     JPanel jp;
     int rc = 110;
@@ -15,9 +15,10 @@ public class CoordsCreator {
     int id = 0;
     int count = rc*cc;
 
+    ArrayList<JButton> buttons = new ArrayList<>();
     int[][] coords = Var.coords;
 
-    public CoordsCreator(int  width, int height){
+    public PixelCreator(int  width, int height){
         jp = new JPanel();
         jp.setVisible(true);
         jp.setSize(width, height);
@@ -69,15 +70,16 @@ public class CoordsCreator {
             JButton b = new JButton();
             b.setBackground(new Color(0, 0, 0));
             b.setVisible(true);
-            b.setBounds(coords[i][0], coords[i][1], width / rc, width / rc);
+            b.setText(coords[i][2] + "");
+            b.setBounds(coords[i][0]/2, coords[i][1]/2, width / rc, width / rc);
             b.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-
-
+                    System.out.println(b.getText());
                 }
             });
             jp.add(b);
+            buttons.add(b);
         }
     }
 
@@ -138,6 +140,10 @@ public class CoordsCreator {
         }
         return 0;
 
+    }
+
+    public ArrayList<JButton> getButtons(){
+        return buttons;
     }
 
 }

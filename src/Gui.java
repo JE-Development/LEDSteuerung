@@ -4,10 +4,10 @@ public class Gui {
 
     JFrame jf;
     LedPanel lp;
-    //int width = 1000;
-    //int height = 800;
-    int width = 2000;
-    int height = 1300;
+    int width = 1000;
+    int height = 800;
+    //int width = 2000;
+    //int height = 1300;
 
     public Gui(){
 
@@ -21,8 +21,12 @@ public class Gui {
         jf.setLayout(null);
 
         lp = new LedPanel();
-        CoordsCreator cc = new CoordsCreator(width, height);
+        PixelCreator cc = new PixelCreator(width, height);
         jf.add(cc.getPanel());
+
+        Led led = new Led(cc.getButtons());
+        led.setLed(40);
+
 
 
 
