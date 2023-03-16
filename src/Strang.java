@@ -5,6 +5,8 @@ public class Strang {
     int[] line;
     int pos = 0;
     boolean dir = true;
+    Knoten knoten;
+    boolean isEnd = false;
 
 
 
@@ -40,10 +42,6 @@ public class Strang {
         }
     }
 
-    public int[] getStrang(){
-        return line;
-    }
-
     public int getNext(){
         if(dir){
             return getForwardNext();
@@ -53,8 +51,9 @@ public class Strang {
     }
 
     public int getForwardNext(){
-        if(pos == line.length-1){
-            return line[line.length-1];
+        if(pos == line.length){
+            isEnd = true;
+            return -1;
         }else {
             int num = line[pos];
             pos++;
@@ -63,13 +62,26 @@ public class Strang {
     }
 
     public int getBackwardNext(){
-        if(pos == 0){
-            return line[0];
+        if(pos == -1){
+            isEnd = true;
+            return -1;
         }else {
             int num = line[pos];
             pos--;
             return num;
         }
+    }
+
+    public boolean isEnd(){
+        return isEnd;
+    }
+
+    public void reset(){
+        pos = 0;
+        if(!dir){
+            pos = line.length-1;
+        }
+        isEnd = false;
     }
 
     public int getCurrent(){
@@ -82,5 +94,9 @@ public class Strang {
 
     public int getLast(){
         return line[line.length-1];
+    }
+
+    public void setKnoten(Knoten k){
+        knoten = k;
     }
 }
