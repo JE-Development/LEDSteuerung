@@ -42,8 +42,8 @@ public class Gui {
 
 class LedSet extends Thread{
     Led led;
-    int max = 0;
-    int delay = 50;
+    int max = 101;
+    int delay = 100;
 
     int r = 255;
     int g = 0;
@@ -62,10 +62,7 @@ class LedSet extends Thread{
         while (true){
             int index = 5;
             for(int i = 0; i <= max; i++){
-                led.setLed(1,delay,r,g,b);
-                if(i - index >= 0){
-                    led.setLed(1,delay,0,0,0);
-                }
+                led.setLed(1,i,delay,r,g,b);
                 increaseColor();
                 //rgbColor();
             }

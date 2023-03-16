@@ -3,9 +3,11 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class Led {
+    ClientManager cm = new ClientManager();
 
     Strang[] lines = new Strang[17];
     ArrayList<JButton> buttons = new ArrayList<>();
+
 
     public Led(ArrayList<JButton> buttons){
         this.buttons = buttons;
@@ -39,9 +41,9 @@ public class Led {
 
     }
 
-    public void setLed(int step, int delay, int r, int g, int b){
+    public void setLed(int step, int frame, int delay, int r, int g, int b){
         for(int i = 0; i < step; i++){
-            checkKnoten(lines[13],r,g,b);
+            checkKnoten(lines[13], frame,r,g,b);
             try {
                 Thread.sleep(delay);
             } catch (InterruptedException e) {
@@ -50,21 +52,21 @@ public class Led {
         }
     }
 
-    public void checkKnoten(Strang strang, int r, int g, int b){
+    public void checkKnoten(Strang strang,int frame, int r, int g, int b){
         int next = strang.getNext();
         if(next != -1){
-            getButtonById(next).setBackground(new Color(r, g, b));
+            setPixel(next,frame,r,g,b);
         }
         if(strang.isEnd()){
             if(strang.knoten != null) {
                 if (strang.knoten.knoten1 != -1) {
-                    checkKnoten(lines[strang.knoten.knoten1], r,g,b);
+                    checkKnoten(lines[strang.knoten.knoten1],frame, r,g,b);
                 }
                 if (strang.knoten.knoten2 != -1) {
-                    checkKnoten(lines[strang.knoten.knoten2],r,g,b);
+                    checkKnoten(lines[strang.knoten.knoten2],frame,r,g,b);
                 }
                 if (strang.knoten.knoten3 != -1) {
-                    checkKnoten(lines[strang.knoten.knoten3],r,g,b);
+                    checkKnoten(lines[strang.knoten.knoten3],frame,r,g,b);
                 }
             }
         }
@@ -84,6 +86,11 @@ public class Led {
         for(int i = 0; i < lines.length; i++){
             lines[i].reset();
         }
+    }
+
+    public void setPixel(int pixel,int frame, int r, int g, int b){
+        getButtonById(pixel).setBackground(new Color(r, g, b));
+        cm.setPixel(frame,r,g,b);
     }
 
 
