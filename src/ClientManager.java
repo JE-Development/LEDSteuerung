@@ -41,4 +41,31 @@ public class ClientManager {
         }
     }
 
+    public void setAllLed(int r, int g, int b){
+
+        Color your_color = new Color(r,g,b);
+
+        String hex = "#"+Integer.toHexString(your_color.getRGB()).substring(2);
+
+        OpenRGBClient client = new OpenRGBClient("localhost", 6742, "Some client name");
+
+        try {
+            client.connect();
+
+            int deviceIndex = 0;
+
+            OpenRGBDevice controller = client.getDeviceController(deviceIndex);
+            //System.out.println(controller);
+
+            for(int i = 0; i < size; i++){
+                openRGBColors[i] = OpenRGBColor.fromHexaString(hex);
+            }
+
+            client.updateLeds(deviceIndex, openRGBColors);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
