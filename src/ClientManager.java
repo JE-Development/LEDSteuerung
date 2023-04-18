@@ -10,10 +10,17 @@ public class ClientManager {
 
     int size = 102;
     OpenRGBColor[] openRGBColors;
+    OpenRGBClient client;
 
     public ClientManager(){
         openRGBColors = new OpenRGBColor[size];
         Arrays.fill(openRGBColors, OpenRGBColor.fromHexaString("#000000"));
+        client = new OpenRGBClient("localhost", 6742, "Some client name");
+        try {
+            client.connect();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void setPixel(int pixel, int r, int g, int b){
@@ -22,10 +29,9 @@ public class ClientManager {
 
         String hex = "#"+Integer.toHexString(your_color.getRGB()).substring(2);
 
-        OpenRGBClient client = new OpenRGBClient("localhost", 6742, "Some client name");
+
 
         try {
-            client.connect();
 
             int deviceIndex = 0;
 

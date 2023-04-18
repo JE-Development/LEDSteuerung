@@ -6,6 +6,7 @@ public class Led {
     ClientManager cm = new ClientManager();
 
     Strang[] lines = new Strang[17];
+    Zone[] zonen = new Zone[6];
     ArrayList<JButton> buttons = new ArrayList<>();
 
 
@@ -39,6 +40,48 @@ public class Led {
         lines[4].setKnoten(new Knoten(3,2,-1));
         lines[5].setKnoten(new Knoten(1,0,-1));
 
+
+        zonen[0] = new Zone(0,16);
+        zonen[0].addRect(2559,1399,2131,1080);
+
+        zonen[1] = new Zone(17,33);
+        zonen[1].addRect(2128,1393,1707,721);
+        zonen[1].addRect(2129,721,2559,1081);
+
+        zonen[2] = new Zone(34,50);
+        zonen[2].addRect(1278,1080,1707,0);
+        zonen[2].addRect(1708,0,2131,722);
+        zonen[2].addRect(2132,351,2559,720);
+
+        zonen[3] = new Zone(51,67);
+        zonen[3].addRect(2132,351,2559,0);
+        zonen[3].addRect(857,717,1277,1399);
+        zonen[3].addRect(1278,1399,1707,1080);
+
+        zonen[4] = new Zone(68,84);
+        zonen[4].addRect(427,0,855,1399);
+        zonen[4].addRect(855,0,1277,716);
+
+        zonen[5] = new Zone(85,101);
+        zonen[5].addRect(0,0,427,1399);
+
+    }
+
+    public int getZoneByPos(int x, int y){
+        for(int i = 0; i < zonen.length; i++){
+            if(zonen[i].isInRect(x,y)){
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public void fillZone(int zoneId, int r, int g, int b){
+        int from = zonen[zoneId].fromFrame;
+        int to = zonen[zoneId].toFrame;
+        for(int i = from; i <= to; i++){
+            setLed(1,i,0,r,g,b);
+        }
     }
 
     public void setLed(int step, int frame, int delay, int r, int g, int b){
@@ -88,8 +131,12 @@ public class Led {
         }
     }
 
-    public void setPixel(int pixel,int frame, int r, int g, int b){
+    public void setButton(int pixel, int r, int g, int b){
         getButtonById(pixel).setBackground(new Color(r, g, b));
+    }
+
+    public void setPixel(int pixel,int frame, int r, int g, int b){
+        setButton(pixel, r, g, b);
         cm.setPixel(frame,r,g,b);
     }
 

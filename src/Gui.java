@@ -2,11 +2,23 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 
 public class Gui {
 
+    /*
+    screen frame
+
+    1 = 0-16 | 2559,1399 - 2131,1080
+    2 = 17-33 | 2128,1393 - 1707,721 | 2129,721 - 2559,1081
+    3 = 34-50 | 1278,1080 - 1707,0 | 1708,0 - 2131,722 | 2132,351 - 2559,720
+    4 = 51-67 | 2132,351 - 2559,0 | 857,717 - 1277,1399 | 1278,1399 - 1707,1080
+    5 = 68-84 | 427,0 - 855,1399 | 855,0 - 1277,716
+    6 = 85-101 | 0,0 - 427,1399
+
+     */
+
     JFrame jf;
-    LedPanel lp;
     int width = 1000;
     int height = 800;
     //int width = 2000;
@@ -20,10 +32,15 @@ public class Gui {
 
     public void create(){
         jf = new JFrame("Controller");
-        jf.setVisible(true);
+        jf.setVisible(false);
         jf.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         jf.setSize(width+20,height+60);
         jf.setLayout(null);
+
+        PixelCreator cc = new PixelCreator(width, height);
+        jf.add(cc.getPanel());
+
+        Led led = new Led(cc.getButtons());
 
         JButton b = new JButton("next");
         b.setVisible(true);
@@ -33,25 +50,19 @@ public class Gui {
             public void actionPerformed(ActionEvent e) {
                 ClientManager cm = new ClientManager();
                 cm.setPixel(pos, 255,0,0);
+                //led.setLed(1,pos,0,255,0,0);
+                System.out.println(pos);
                 pos++;
             }
         });
         jf.add(b);
 
-        lp = new LedPanel();
-        PixelCreator cc = new PixelCreator(width, height);
-        jf.add(cc.getPanel());
-
-        Led led = new Led(cc.getButtons());
-
         LedSet ls = new LedSet(led, ledMax);
         ls.start();
 
-
-
-
-
         jf.repaint();
+
+
     }
 
 }
@@ -78,24 +89,69 @@ class LedSet extends Thread{
 
     public void run(){
         while (true){
-            int index = 5;
+            getScreen();
+            /*rlColor();
+            cm.setAllLed(r,g,b);
+            led.reset();*/
             /*for(int i = 0; i <= max; i++){
                 led.setLed(1,i,delay,r,g,b);
-                //increaseColor();
-                rlColor();
+                increaseColor();
                 //rgbColor();
             }*/
-            rlColor();
-            cm.setAllLed(r,g,b);
-            led.reset();
+
             /*for(int i = 0; i <= max; i++){
                 led.setLed(1,delay,0,255,0);
             }
             led.reset();
             for(int i = 0; i <= max; i++){
                 led.setLed(1,delay,0,0,255);
+            }*/
+            led.reset();
+        }
+    }
+
+    public void getScreen(){
+        int[] zc = {0,0,0,0,0,0};
+        int[] zar = {0,0,0,0,0,0};
+        int[] zag = {0,0,0,0,0,0};
+        int[] zab = {0,0,0,0,0,0};
+        int[] zdr = {0,0,0,0,0,0};
+        int[] zdg = {0,0,0,0,0,0};
+        int[] zdb = {0,0,0,0,0,0};
+
+
+        try {
+            Robot r = new Robot();
+            Rectangle screenRect = new Rectangle(0, 0, (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth(),
+                    (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight());
+
+            BufferedImage capture = r.createScreenCapture(screenRect);
+            for(int y = 0; y < capture.getHeight(); y++){
+                for(int x = 0; x < capture.getWidth(); x++){
+                    int zone = led.getZoneByPos(x,y);
+                    if(zone != -1){
+                        zc[zone]++;
+                        Color col = new Color(capture.getRGB(x, y));
+                        zar[zone] += col.getRed();
+                        zag[zone] += col.getGreen();
+                        zab[zone] += col.getBlue();
+                    }
+                }
             }
-            led.reset();*/
+            for(int i = 0; i < zdr.length; i++){
+                zdr[i] = zar[i]/zc[i];
+                zdg[i] = zag[i]/zc[i];
+                zdb[i] = zab[i]/zc[i];
+            }
+
+            for(int i = 0; i < zdr.length; i++){
+                led.fillZone(i,zdr[i], zdg[i], zdb[i]);
+            }
+
+
+
+        } catch (AWTException e) {
+            throw new RuntimeException(e);
         }
     }
 
