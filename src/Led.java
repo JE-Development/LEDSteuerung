@@ -83,6 +83,11 @@ public class Led {
             setLed(1,i,0,r,g,b);
         }
     }
+    public void allBlack(){
+        for(int i = 0; i < zonen.length; i++){
+            fillZone(i,0,0,0);
+        }
+    }
 
     public void setLed(int step, int frame, int delay, int r, int g, int b){
         for(int i = 0; i < step; i++){

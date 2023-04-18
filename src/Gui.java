@@ -24,23 +24,40 @@ public class Gui {
     //int width = 2000;
     //int height = 1300;
     int ledMax = 101;
+    int ledMaxWall = 101;
+    int ledMaxCase = 15;
     int pos = 0;
+    LedSet ls;
+    boolean isCaseModus = false;
 
     public Gui(){
 
     }
 
     public void create(){
+
+
+        PixelCreator cc = new PixelCreator(width, height);
+
+        Led led = new Led(cc.getButtons());
+
+        ls = new LedSet(led, ledMax);
+        ls.start();
+
+
+
+        //createPreviewGui(led, cc);
+        createSelectionGui(led);
+    }
+
+    public void createPreviewGui(Led led, PixelCreator cc){
         jf = new JFrame("Controller");
-        jf.setVisible(false);
+        jf.setVisible(true);
         jf.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         jf.setSize(width+20,height+60);
         jf.setLayout(null);
 
-        PixelCreator cc = new PixelCreator(width, height);
         jf.add(cc.getPanel());
-
-        Led led = new Led(cc.getButtons());
 
         JButton b = new JButton("next");
         b.setVisible(true);
@@ -57,12 +74,233 @@ public class Gui {
         });
         jf.add(b);
 
-        LedSet ls = new LedSet(led, ledMax);
-        ls.start();
+        JButton pc = new JButton("pc led modus");
+        pc.setVisible(true);
+        pc.setBounds(width/2, height-height/4+40, 130,30);
+        pc.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(isCaseModus){
+                    isCaseModus = false;
+                    pc.setText("pc led modus");
+                    ls.stop();
+                    ledMax = ledMaxWall;
+                    ls = new LedSet(led, ledMax);
+                    ls.start();
+                }else{
+                    isCaseModus = true;
+                    pc.setText("wall led modus");
+                    ls.stop();
+                    ledMax = ledMaxCase;
+                    ls = new LedSet(led, ledMax);
+                    ls.start();
+                }
+            }
+        });
+        jf.add(pc);
+
 
         jf.repaint();
+    }
+
+    public void createSelectionGui(Led led){
+        jf = new JFrame("Selection");
+        jf.setSize(500,300);
+        jf.setLayout(null);
+        jf.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        jf.setVisible(true);
+
+        JButton next = new JButton("next");
+        next.setVisible(true);
+        next.setBounds(10, 10, 100,30);
+        next.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ClientManager cm = new ClientManager();
+                cm.setPixel(pos, 255,0,0);
+                //led.setLed(1,pos,0,255,0,0);
+                System.out.println(pos);
+                pos++;
+            }
+        });
+        jf.add(next);
+
+        JButton pc = new JButton("pc led modus");
+        pc.setVisible(true);
+        pc.setBounds(10, 50, 130,30);
+        pc.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(isCaseModus){
+                    isCaseModus = false;
+                    pc.setText("pc led modus");
+                    ls.stop();
+                    ledMax = ledMaxWall;
+                    ls = new LedSet(led, ledMax);
+                    ls.start();
+                }else{
+                    isCaseModus = true;
+                    pc.setText("wall led modus");
+                    ls.stop();
+                    ledMax = ledMaxCase;
+                    ls = new LedSet(led, ledMax);
+                    ls.start();
+                }
+            }
+        });
+        jf.add(pc);
+
+        JButton step = new JButton("step");
+        step.setVisible(true);
+        step.setBackground(new Color(255,0,0));
+        step.setBounds(140, 10, 130,30);
+        step.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ls.setModus("step");
+                if(ls.step){
+                    step.setBackground(new Color(0,255,0));
+                }else{
+                    step.setBackground(new Color(255,0,0));
+                }
+            }
+        });
+        jf.add(step);
+
+        JButton clear = new JButton("clear");
+        clear.setVisible(true);
+        clear.setBackground(new Color(255,255,0));
+        clear.setBounds(10, 90, 100,30);
+        clear.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                led.allBlack();
+                ls.clear();
+            }
+        });
+        jf.add(clear);
+
+        JButton types = new JButton("Animation Types");
+        types.setVisible(true);
+        types.setBackground(new Color(255,255,255));
+        types.setBounds(10, 130, 140,30);
+        types.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFrame j = new JFrame("Animations");
+                j.setSize(500,200);
+                j.setLayout(null);
+                j.setVisible(true);
+                j.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+
+                JLabel green = new JLabel("Wall Animation");
+                green.setForeground(new Color(0,255,0));
+                green.setVisible(true);
+                green.setBounds(5,5,100,15);
+                j.add(green);
+
+                JLabel blue = new JLabel("PC Animation");
+                blue.setForeground(new Color(0,0,255));
+                blue.setVisible(true);
+                blue.setBounds(105,5,100,15);
+                j.add(blue);
+
+                JButton gb = new JButton("Green Blue");
+                gb.setVisible(true);
+                gb.setBackground(new Color(0,255,0));
+                gb.setBounds(10, 20, 100,30);
+                gb.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        ledMax = ledMaxWall;
+                        ls.setMax(ledMax);
+                        ls.setModus("gb");
+                    }
+                });
+                j.add(gb);
+
+                JButton gbpc = new JButton("Green Blue");
+                gbpc.setVisible(true);
+                gbpc.setBackground(new Color(0,0,255));
+                gbpc.setForeground(new Color(255,255,255));
+                gbpc.setBounds(120, 20, 100,30);
+                gbpc.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        ledMax = ledMaxCase;
+                        ls.setMax(ledMax);
+                        ls.setModus("gb");
+                    }
+                });
+                j.add(gbpc);
+
+                JButton ic = new JButton("Increase Color");
+                ic.setVisible(true);
+                ic.setBackground(new Color(0,255,0));
+                ic.setBounds(10, 60, 120,30);
+                ic.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        ledMax = ledMaxWall;
+                        ls.setMax(ledMax);
+                        ls.setModus("increaseColor");
+                    }
+                });
+                j.add(ic);
+
+                JButton icpc = new JButton("Increase Color");
+                icpc.setVisible(true);
+                icpc.setBackground(new Color(0,0,255));
+                icpc.setForeground(new Color(255,255,255));
+                icpc.setBounds(140, 60, 120,30);
+                icpc.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        ledMax = ledMaxCase;
+                        ls.setMax(ledMax);
+                        ls.setModus("increaseColorPc");
+                    }
+                });
+                j.add(icpc);
+
+                JButton screen = new JButton("Screen");
+                screen.setVisible(true);
+                screen.setBackground(new Color(255,255,255));
+                screen.setBounds(10, 100, 120,30);
+                screen.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        ledMax = ledMaxWall;
+                        ls.setMax(ledMax);
+                        ls.setModus("screen");
+                    }
+                });
+                j.add(screen);
+
+                JButton rl = new JButton("Rocket League");
+                rl.setVisible(true);
+                rl.setBackground(new Color(255,255,255));
+                rl.setBounds(140, 100, 130,30);
+                rl.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        ledMax = ledMaxWall;
+                        ls.setMax(ledMax);
+                        ls.setModus("rl");
+                    }
+                });
+                j.add(rl);
 
 
+
+                j.repaint();
+            }
+        });
+        jf.add(types);
+
+
+
+        jf.repaint();
     }
 
 }
@@ -77,8 +315,22 @@ class LedSet extends Thread{
     int b = 0;
 
     int hue = 0;
+    int huePc = 0;
 
     int hueIndex = 1;
+    int hueIndexPc = 4;
+
+    boolean clear = false;
+
+    boolean step = false;
+    boolean gb = false;
+    boolean ic = true;
+    boolean icpc = false;
+    boolean screen = false;
+    boolean rl = false;
+
+    boolean rlGoalBlue = false;
+    boolean rlGoalOrange = false;
 
     ClientManager cm = new ClientManager();
 
@@ -89,25 +341,140 @@ class LedSet extends Thread{
 
     public void run(){
         while (true){
-            getScreen();
-            /*rlColor();
-            cm.setAllLed(r,g,b);
-            led.reset();*/
-            /*for(int i = 0; i <= max; i++){
-                led.setLed(1,i,delay,r,g,b);
-                increaseColor();
-                //rgbColor();
-            }*/
+            if(!step) {
+                if(screen) {
+                    getScreen();
+                }
+                if(rl){
+                    if(rlGoalOrange){
+                        rlColor();
+                        cm.setAllLed(r,g,b);
+                        rlGoalOrange = false;
+                        for (int i = 0; i <= max; i++) {
+                            led.setLed(1, i, 10, 255, 255, 0);
+                        }
+                        led.reset();
+                        for (int i = 0; i <= max; i++) {
+                            led.setLed(1, i, 10, 255, 100, 0);
+                        }
+                    }
+                    if(rlGoalBlue){
+                        rlColor();
+                        cm.setAllLed(r,g,b);
+                        rlGoalBlue = false;
+                        for (int i = 0; i <= max; i++) {
+                            led.setLed(1, i, 10, 0, 255, 255);
+                        }
+                        led.reset();
+                        for (int i = 0; i <= max; i++) {
+                            led.setLed(1, i, 10, 0, 0, 255);
+                        }
+                    }
 
-            /*for(int i = 0; i <= max; i++){
-                led.setLed(1,delay,0,255,0);
+                    rlColor();
+                    cm.setAllLed(r,g,b);
+                    led.reset();
+                }
+                if(ic) {
+                    for (int i = 0; i <= max; i++) {
+                        led.setLed(1, i, delay, r, g, b);
+                        increaseColor();
+                        if(clear){
+                            break;
+                        }
+                    }
+                }
+
+                if(icpc) {
+                    for (int i = 0; i <= max; i++) {
+                        led.setLed(1, i, delay, r, g, b);
+                        increaseColorPc();
+                        if(clear){
+                            break;
+                        }
+                    }
+                }
+
+                if(gb){
+                    for (int i = 0; i <= max; i++) {
+                        if(!step) {
+                            led.setLed(1, i, delay, 0, 255, 0);
+                        }
+                        if(clear){
+                            break;
+                        }
+                    }
+                    led.reset();
+                    for (int i = 0; i <= max; i++) {
+                        if(!step) {
+                            led.setLed(1, i, delay, 0, 0, 255);
+                        }
+                        if(clear){
+                            break;
+                        }
+                    }
+                }
             }
-            led.reset();
-            for(int i = 0; i <= max; i++){
-                led.setLed(1,delay,0,0,255);
-            }*/
+            clear = false;
             led.reset();
         }
+    }
+
+    public void setModus(String modus){
+        switch (modus){
+            case "step":
+                setAllFalse();
+                if(step){
+                    step = false;
+                }else {
+                    step = true;
+                }
+                clear();
+                break;
+            case "gb":
+                setAllFalse();
+                gb = true;
+                clear();
+                break;
+            case "increaseColor":
+                setAllFalse();
+                ic = true;
+                clear();
+                break;
+            case "increaseColorPc":
+                setAllFalse();
+                icpc = true;
+                clear();
+                break;
+            case "screen":
+                setAllFalse();
+                screen = true;
+                clear();
+                break;
+            case "rl":
+                setAllFalse();
+                rl = true;
+                clear();
+                break;
+
+        }
+    }
+
+    public void setAllFalse(){
+        step = false;
+        gb = false;
+        ic = false;
+        icpc = false;
+        screen = false;
+        rl = false;
+    }
+
+    public void clear(){
+        clear = true;
+    }
+
+    public void setMax(int max){
+        this.max = max;
     }
 
     public void getScreen(){
@@ -163,17 +530,12 @@ class LedSet extends Thread{
         hue += hueIndex;
     }
 
-    public void rgbColor(){
-        if(r == 255){
-            g = 255;
-            r = 0;
-        }else if(g == 255){
-            g = 0;
-            b = 255;
-        }else if(b == 255){
-            b = 0;
-            r = 255;
-        }
+    public void increaseColorPc(){
+        Color color = Color.getHSBColor((float)huePc / 360f, 1f, 1f);
+        r = color.getRed();
+        g = color.getGreen();
+        b = color.getBlue();
+        huePc += hueIndexPc;
     }
 
     public void rlColor(){
@@ -182,34 +544,40 @@ class LedSet extends Thread{
         try {
             Robot robot = new Robot();
 
-            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-            int width = (int) screenSize.getWidth();
-            int height = (int) screenSize.getHeight();
+            Color col = robot.getPixelColor(1058,90);
+            Color verification1 = robot.getPixelColor(1270,73);
+            Color verification2 = robot.getPixelColor(1270,89);
 
-            Color col = robot.getPixelColor(1103,86);
+            Color verification3 = robot.getPixelColor(1256,73);
+            Color verification4 = robot.getPixelColor(1256,89);
 
-            int red = col.getRed();
-            int green = col.getGreen();
-            int blue = col.getBlue();
-            if(blue > 150){
-                if(red > 120){
-                    r = 0;
-                    g = 255;
-                    b = 255;
+            if(verification1.getRed() >= 230 && verification1.getGreen() >= 230 && verification1.getBlue() >= 230
+            && verification2.getRed() >= 230 && verification2.getGreen() >= 230 && verification2.getBlue() >= 230
+            || verification3.getRed() >= 230 && verification3.getGreen() >= 230 && verification3.getBlue() >= 230
+                    && verification4.getRed() >= 230 && verification4.getGreen() >= 230 && verification4.getBlue() >= 230){
+                int red = col.getRed();
+                int green = col.getGreen();
+                int blue = col.getBlue();
+                if(blue > 150){
+                    if(red > 120){
+                        rlGoalBlue = true;
+                    }else{
+                        r = 0;
+                        g = 0;
+                        b = 255;
+                    }
+                }else if(red > 150){
+                    if(blue > 100){
+                        rlGoalOrange = true;
+                    }else{
+                        r = 255;
+                        g = 100;
+                        b = 0;
+                    }
                 }else{
-                    r = 0;
-                    g = 0;
-                    b = 255;
-                }
-            }else if(red > 150){
-                if(blue > 100){
-                    r = 255;
-                    g = 255;
-                    b = 0;
-                }else{
-                    r = 255;
-                    g = 100;
-                    b = 0;
+                    r = red;
+                    g = green;
+                    b = blue;
                 }
             }else{
                 r = 0;
