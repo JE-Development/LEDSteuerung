@@ -545,16 +545,21 @@ class LedSet extends Thread{
             Robot robot = new Robot();
 
             Color col = robot.getPixelColor(1058,90);
-            Color verification1 = robot.getPixelColor(1270,73);
-            Color verification2 = robot.getPixelColor(1270,89);
 
-            Color verification3 = robot.getPixelColor(1256,73);
-            Color verification4 = robot.getPixelColor(1256,89);
+            Color verify[] = new Color[6];
 
-            if(verification1.getRed() >= 230 && verification1.getGreen() >= 230 && verification1.getBlue() >= 230
-            && verification2.getRed() >= 230 && verification2.getGreen() >= 230 && verification2.getBlue() >= 230
-            || verification3.getRed() >= 230 && verification3.getGreen() >= 230 && verification3.getBlue() >= 230
-                    && verification4.getRed() >= 230 && verification4.getGreen() >= 230 && verification4.getBlue() >= 230){
+            verify[0] = robot.getPixelColor(1270,73);
+            verify[1] = robot.getPixelColor(1270,89);
+
+            verify[2] = robot.getPixelColor(1256,73);
+            verify[3] = robot.getPixelColor(1256,89);
+
+            verify[4] = robot.getPixelColor(1241,73);
+            verify[5] = robot.getPixelColor(1241,89);
+
+
+
+            if(checkVerify(verify)){
                 int red = col.getRed();
                 int green = col.getGreen();
                 int blue = col.getBlue();
@@ -589,6 +594,15 @@ class LedSet extends Thread{
         }catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    public boolean checkVerify(Color[] verify){
+        for(int i = 0; i < verify.length; i++){
+            if(verify[i].getRed() >= 230 && verify[i].getGreen() >= 230 && verify[i].getBlue() >= 230){
+                return true;
+            }
+        }
+        return false;
     }
 
 }
